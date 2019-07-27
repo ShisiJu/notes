@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>数组和链表</title>
+	</head>
+	<body>
+	</body>
+</html>
+
+<script>
+	//  定义一个 ListNode
+	function ListNode(val) {
+		this.val = val;
+		this.next = null;
+	}
+
+	// 测试用例 [1,2,3,4,5] 
+	let list = new ListNode(1);
+	let tmp = list;
+	for (let i = 2; i < 6; i++) {
+		tmp.next = new ListNode(i);
+		tmp = tmp.next;
+	}
+
+	// 反转链表
+	var reverseList = function(headTemp) {
+		var head = headTemp;
+		var pre = null;
+		var post = null;
+		while (head !== null) {
+			post = head.next;
+			head.next = pre;
+			pre = head;
+			head = post;
+		}
+		return pre;
+	};
+
+	var getEndNode = function(head, k) {
+		for (let i = 0; i < k - 1; i++) {
+			if (head == null) {
+				return false;
+			}
+			// 这里的head,可能返回null,当i=k-1,但是head.next == null
+			head = head.next;
+		}
+		return head;
+	}
+
+	// K 个元素为一组交换
+	var reverseKGroup = function(head, k) {
+		let first = null;
+		let pre = null;
+		while (head != null) {
+			let start = head;
+			let end = getEndNode(head, k);
+			// end 为false 或则 null,说明剩下的不足k
+			if (end === false || end === null) {
+				return first;
+			} else {
+				head = end.next;
+			}
+			end.next = null;
+			reverseList(start)
+			start.next = head;
+			if (pre != null) {
+				pre.next = end;
+			} else {
+				first = end;
+			}
+			pre = start;
+		}
+		return first;
+	}
+
+	// 判断是否有环,有返回入口节点,无返回null
+	var detectCycle = function(head) {
+		var set = new Set();
+		while (head != null) {
+			if (set.has(head)) {
+				return head;
+			} else {
+				set.add(head)
+				head = head.next;
+			}
+		}
+		return null;
+	};
+
+
+	// 判断是否有环,有返回入口节点,无返回null
+	var detectCycle2 = function(head) {
+		// 如果就1个节点,且next为空
+		if (head.next === null) {
+			return false;
+		}
+		let fast = head.next.next;
+		let slow = head.next;
+		while (fast !== null) {
+			if (fast === slow) {
+				return true;
+			}
+			slow = slow.next;
+			if (fast.next === null) {
+				return false;
+			}
+			fast = fast.next.next;
+		}
+		return false;
+	};
+
+
+
+	var revList = reverseKGroup(list, 3);
+	console.log(revList);
+</script>
