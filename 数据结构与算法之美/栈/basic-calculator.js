@@ -45,7 +45,7 @@ function handle(num, opt, chr) {
       handleCal(num, popChr)
     }
   }
-  if (opt[opt.length - 1] == '(') {
+  if (opt[opt.length - 1] == '(' || opt.length == 0) {
     opt.push(chr)
     return
   }
@@ -58,11 +58,13 @@ function handle(num, opt, chr) {
  * @return {number}
  */
 var calculate = function (s) {
-  let expr = s.replace(' ', '')
+  let expr = s.replace(/\s/g, '')
   let opt = []
   let num = []
 
-  for (let i = 0; i < expr.length; i++) {
+  let numArr = [...expr.matchAll(/\d+/g)]
+  for (let i = 0; i < expr.length;) {
+
     let chr = expr[i]
     if (isNumber(chr)) {
       num.push(Number(chr))
@@ -78,4 +80,9 @@ var calculate = function (s) {
 };
 
 
-calculate("(1+(4+5+2)-3)+(6+8)")
+// let result = calculate("(1+(4+5+2)-3)+(6+8)")
+let result = calculate(" 1+1  -1")
+
+
+console.log(result)
+// calculate("(1+(4+5+2)-3)")
