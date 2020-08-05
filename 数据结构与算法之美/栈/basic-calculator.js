@@ -62,12 +62,15 @@ var calculate = function (s) {
   let opt = []
   let num = []
 
-  let numArr = [...expr.matchAll(/\d+/g)]
-  for (let i = 0; i < expr.length;) {
-
+  let numStr = ''
+  for (let i = 0; i < expr.length; i++) {
     let chr = expr[i]
     if (isNumber(chr)) {
-      num.push(Number(chr))
+      numStr += chr
+      if (expr[i + 1] == null || !isNumber(expr[i + 1])) {
+        num.push(Number(numStr))
+        numStr = ''
+      }
       continue
     }
     handle(num, opt, chr)
@@ -82,7 +85,7 @@ var calculate = function (s) {
 
 // let result = calculate("(1+(4+5+2)-3)+(6+8)")
 let result = calculate(" 1+1  -1")
+// let result = calculate(" 188123")
 
 
 console.log(result)
-// calculate("(1+(4+5+2)-3)")
