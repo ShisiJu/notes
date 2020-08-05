@@ -10,16 +10,6 @@ function isNumber(chr) {
 }
 
 
-function handleAddOrSub(num, opt, chr) {
-  let isPush = opt[opt.length - 1] == '('
-  if (isPush) {
-    opt.push(chr)
-    return
-  }
-
-  handleCal(num, chr)
-}
-
 function handleCal(num, chr) {
   let n2 = num.pop()
   let n1 = num.pop()
