@@ -18,6 +18,7 @@ var sortArray = function (nums) {
       // 迁移元素 
       // 先找到要插入的位置, 从左边起第一个大于等于它的
       let insertIndex = 0
+      // 这个比大小可以使用 二分法比较 因为是在已经拍好顺序的部分检索
       for (let i = 0; i < index; i++) {
         if (element >= nums[i]) {
           continue
