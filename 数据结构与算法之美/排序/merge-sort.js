@@ -1,16 +1,16 @@
 function getMin(a1, a2) {
   if (a1.length == 0) {
-    return a2.unshift();
+    return a2.shift();
   }
 
   if (a2.length == 0) {
-    return a1.unshift();
+    return a1.shift();
   }
 
   if (a1[0] >= a2[0]) {
-    return a1.unshift()
+    return a2.shift()
   } else {
-    return a2.unshift()
+    return a1.shift()
   }
 }
 
@@ -32,20 +32,17 @@ function merge_array(array, start, end) {
   let a1 = merge_array(array, start, mid)
   let a2 = merge_array(array, mid + 1, end)
   merge(array, a1, a2, start, end)
+  return array.slice(start, end + 1)
 }
 
 
 // 归并排序
-
 function merge_sort(array) {
   if (array.length < 2) {
     return array;
   }
   return merge_array(array, 0, array.length - 1)
 }
-
-
-
 
 
 let array = [3, 1, -1, 9, 5, 3]
