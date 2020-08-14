@@ -1,20 +1,27 @@
 function swap(array, i, j) {
+  if (i == j) {
+    return array
+  }
 
+  let temp = array[i]
+  array[i] = array[j]
+  array[j] = temp
+  return array
 }
 
 
 function partition(array, start, end) {
-  let p = array[end]
-  let j = start
-  for (let i = start; i < end; i++) {
-
-    if (array[i] >= p) {
-      swap(array, i, j);
-    } else {
-      j++
+  let pivot = array[end]
+  let i = start
+  let j = start;
+  for (j = start; j < end; j++) {
+    if (array[j] <= pivot) {
+      swap(array, i, j)
+      i++
     }
   }
-
+  swap(array, i, end)
+  return i
 }
 
 function quick_sort_c(array, start, end) {
@@ -24,15 +31,16 @@ function quick_sort_c(array, start, end) {
   }
 
   // 获取分区点
-  let pviot = partition(array, start, end)
-  quick_sort_c(array, start, pviot)
-  quick_sort_c(array, pviot + 1, end)
+  let pivot = partition(array, start, end)
+  quick_sort_c(array, start, pivot - 1)
+  quick_sort_c(array, pivot + 1, end)
 }
 
 
 
 function quick_sort(array) {
-  return quick_sort_c(array, 0, array.length - 1)
+  quick_sort_c(array, 0, array.length - 1)
+  return array
 }
 
 
