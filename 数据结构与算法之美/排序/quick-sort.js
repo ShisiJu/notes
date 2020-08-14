@@ -15,7 +15,7 @@ function partition(array, start, end) {
   let i = start
   let j = start;
   for (j = start; j < end; j++) {
-    if (array[j] <= pivot) {
+    if (array[j] < pivot) {
       swap(array, i, j)
       i++
     }
