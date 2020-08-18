@@ -1,42 +1,112 @@
 // 二分查找
 // 数据必须是有序的数组
+function getNearIndex(array, value) {
+  let start = 0;
+  let end = array.length - 1;
+  while (end >= start) {
+    let mid = Math.floor((start + end) / 2)
+    if (array[mid] === value) {
+      return mid;
+    }
+    if (array[mid] >= value) {
+      end = mid - 1;
+    } else {
+      start = mid + 1;
+    }
+  }
+  return -1
+}
+
+// 查找近似值的index
+function getNearValueIndex(array, value) {
+  let start = 0;
+  let end = array.length - 1;
+  while (end >= start) {
+    let mid = Math.floor((start + end) / 2)
+    if (array[mid] === value) {
+      return mid;
+    }
+    if (array[mid] >= value) {
+      end = mid - 1;
+    } else {
+      start = mid + 1;
+    }
+  }
+  return start
+}
+
 
 function searchFirstEq(array, value) {
-  let start = 0;
-  let end = array.length - 1;
-  while (end >= start) {
-    let mid = Math.floor((start + end) / 2)
-    if (array[mid] === value) {
-      return mid;
-    }
-    if (array[mid] >= value) {
-      end = mid - 1;
-    } else {
-      start = mid + 1;
-    }
+  let index = getNearIndex(array, value)
+  // 向前查找
+  if (index == -1) {
+    return index
   }
-  return -1
+  while (array[index] == value && index > -1) {
+    index--
+  }
+  return index + 1
 }
-
 
 function searchLastEq(array, value) {
-  let start = 0;
-  let end = array.length - 1;
-  while (end >= start) {
-    let mid = Math.floor((start + end) / 2)
-    if (array[mid] === value) {
-      return mid;
+  let index = getNearIndex(array, value)
+  // 向前查找
+  if (index == -1) {
+    return index
+  }
+  while (array[index] == value && index < array.length) {
+    index++
+  }
+  return index - 1
+}
+
+
+function searchFirstGt(array, value) {
+  let index = getNearValueIndex(array, value)
+  if (array[index] < value) {
+    // 向右找到一个大于等于value的index
+    while (index < array.length) {
+      if (array[index] >= value) {
+        return index
+      }
+      index++
     }
-    if (array[mid] >= value) {
-      end = mid - 1;
-    } else {
-      start = mid + 1;
+  } else {
+    // 向左找到最后一个大于等于value的index
+    while (index > -1) {
+      if (array[index] >= value) {
+        index--
+      } else {
+        return index + 1
+      }
     }
   }
   return -1
 }
 
 
-let array = [-1, 3, 6, 88, 88, 234, 672, 1231]
-let result = searchFirstEq(array, 88)
-console.log(result);
+
+function bsearch(a, n, value) {
+  let low = 0;
+  let high = n - 1;
+  while (low <= high) {
+    let mid = low + ((high - low) >> 1);
+    if (a[mid] >= value) {
+      if ((mid == 0) || (a[mid - 1] < value)) return mid;
+      else high = mid - 1;
+    } else {
+      low = mid + 1;
+    }
+  }
+  return -1;
+}
+
+
+
+let array = [-1, 3, 6, 88, 88, 88, 234, 672, 1231]
+console.log(searchFirstEq(array, 88));
+console.log(searchLastEq(array, 88));
+console.log(searchFirstGt(array, 88));
+
+
+
