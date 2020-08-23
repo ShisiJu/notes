@@ -5,3 +5,8 @@
 
 桶排序, 计数排序 适用于数据范围小, 且天然有序的数据
 计数排序 需要转换成正整数处理
+
+平方根
+https://leetcode-cn.com/problems/sqrtx/
+
+

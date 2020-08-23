@@ -101,12 +101,37 @@ function bsearch(a, n, value) {
   return -1;
 }
 
+// 查找第一个大于等于给定值的元素
+
+function findFirstGte(array, value) {
+  if (array[0] > value) {
+    return -1
+  }
+
+  let start = 0
+  let end = array.length - 1
+  while (start <= end) {
+    let mid = Math.floor((start + end) / 2)
+    if (array[mid] >= value) {
+      if (mid == 0 || array[mid - 1] < value) {
+        return mid
+      }
+      end = mid - 1
+    } else {
+      start = mid + 1
+    }
+  }
+}
 
 
-let array = [-1, 3, 6, 88, 88, 88, 234, 672, 1231]
+
+let array = [-1, 3, 6, 88, 88, 88, 88, 234, 672, 1231]
+
+console.log(findFirstGte(array, 88));
 console.log(searchFirstEq(array, 88));
 console.log(searchLastEq(array, 88));
 console.log(searchFirstGt(array, 88));
+
 
 
 
