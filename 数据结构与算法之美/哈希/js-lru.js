@@ -1,5 +1,9 @@
+// https://leetcode-cn.com/problems/lru-cache-lcci/
 // https://github.com/rsms/js-lru
-
+// 在极客时间上, hnext 对应自己要维护的 hash
+// 基于链表法解决冲突的散列表中链表的next指针
+// 冲突是hash表内部解决的，
+// 这里左边的不应该是hash表，而应该是数组才对。如果做左边是hash表，不需要这个hnext结构
 class Node {
   constructor(pre, next, value) {
     this.pre = pre
