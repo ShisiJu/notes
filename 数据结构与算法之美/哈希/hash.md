@@ -30,9 +30,11 @@
 
 ## 思考题
 
-使用hashmap 实现缓存淘汰算法--LRU算法
+使用hashmap 和 list 实现缓存淘汰算法--LRU算法
 
 https://zhuanlan.zhihu.com/p/34989978
+
+https://github.com/rsms/js-lru
 
 
 ## bitmap
