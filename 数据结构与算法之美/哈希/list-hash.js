@@ -19,19 +19,8 @@ class Node {
   }
 }
 
-function deleteKey(head, key) {
-  while (head.next != null) {
-    if (head.next.key == key) {
-      head.next = head.next.next
-    } else {
-      head = head.next
-    }
-  }
-  return head
-}
-
 class ListHash {
-  constructor(capacity = 16, loadFactor = 0.75) {
+  constructor(capacity = 4, loadFactor = 0.75) {
     this.capacity = capacity;
     this.loadFactor = loadFactor;
     this.array = []
@@ -39,24 +28,57 @@ class ListHash {
   }
 
   isFull() {
-    return this.loadFactor < this.count / this.capacity
+    return this.loadFactor <= this.count / this.capacity
   }
 
   size() {
     return this.count
   }
 
+  each(fn) {
+    this.array.forEach(dummy => {
+      let head = null
+      // 头结点是 dummy 节点
+      if (dummy != null) {
+        head = dummy.next
+      }
+      while (head != null) {
+        fn({ key: head.key, value: head.value })
+        head = head.next
+      }
+    })
+  }
+
+  expansion() {
+    this.capacity = this.capacity * 2
+    let data = []
+    this.each(entry => {
+      data.push(entry)
+    })
+    this.array = []
+    this.count = 0
+    data.forEach(entry => {
+      this.add(entry.key, entry.value)
+    })
+  }
+
   add(key, value) {
     // 扩容处理
+    if (this.isFull()) {
+      this.expansion()
+    }
+    this.count++
     const hashIndex = this.index(key)
     const newNode = new Node(key, value, null)
-    this.count++
+
     if (this.array[hashIndex] == null) {
       this.array[hashIndex] = new Node(null, null, newNode)
       return
     }
-    const tail = this.__delete(key)
-    tail.next = newNode
+    this.delete(key)
+    let dummy = this.array[hashIndex]
+    newNode.next = dummy.next
+    dummy.next = newNode
   }
 
   index(key) {
@@ -67,17 +89,36 @@ class ListHash {
     return this.array[this.index(key)]
   }
 
-  delete(key) {
-    __delete(key)
+  has(key) {
+    let dummy = this.keyHead(key)
+    if (dummy == null) {
+      return false
+    }
+    let head = dummy.next
+    while (head != null) {
+      if (head.key == key) {
+        return true
+      }
+      head = head.next
+    }
+    return false
   }
 
-  __delete(key) {
-    this.count--
-    // 对应index中没有数据
-    if (!this.keyHead(key)) {
-      return
+  delete(key) {
+    let dummy = this.keyHead(key)
+    if (dummy == null) {
+      return false
     }
-    return deleteKey(this.keyHead(key), key)
+
+    while (dummy.next != null) {
+      if (dummy.next.key == key) {
+        dummy.next = dummy.next.next
+        this.count--
+        return true
+      }
+      dummy = dummy.next
+    }
+    return false
   }
 
   get(key) {
@@ -99,7 +140,13 @@ class ListHash {
 let hash = new ListHash()
 
 console.assert(hash.add('kjjl', 1) === undefined, true)
-console.assert(hash.add('kjjl', 1) === undefined, true)
-console.assert(hash.add('kjjl', 1) === undefined, true)
-console.assert(hash.size() === 1, `size应该为1, 但是值却为${hash.size()}`)
+console.assert(hash.add('1jl', 1) === undefined, true)
+console.assert(hash.add('k2jl', 1) === undefined, true)
+console.assert(hash.delete('k2jl') === true, '删除存在的key失败')
+console.assert(hash.size() === 2, `size应该为2, 实际为 ${hash.size()}`)
+console.assert(hash.add('k3jl', 2131) === undefined, true)
+console.assert(hash.add('k4l', 1312) === undefined, true)
+console.assert(hash.size() === 4, `size应该为4, 实际为 ${hash.size()}`)
+
+
 
