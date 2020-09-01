@@ -75,3 +75,21 @@ https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Equality_comparisons_and
 ## 一致性哈希算法
 
 类比钟表的环
+## hash算法
+
+将任意长度的二进制值串映射为固定长度的二进制值串，这个映射的规则就是哈希算法，而通过原始数据映射之后得到的二进制值串就是哈希值.
+
+1. 单向
+2. 快速
+3. hash分布冲突少
+4. bit 
+
+### hash算法的应用
+
+安全加密、
+唯一标识、
+数据校验、
+散列函数、
+负载均衡、
+数据分片、
+分布式存储
