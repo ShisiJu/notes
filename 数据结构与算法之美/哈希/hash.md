@@ -70,3 +70,8 @@ https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Equality_comparisons_and
 ## 均摊扩容
 
 均摊的方法，将一次性扩容的代价，均摊到多次插入操作中，就避免了一次性扩容耗时过多的情况。这种实现方式，任何情况下，插入一个数据的时间复杂度都是 O(1)。
+
+
+## 一致性哈希算法
+
+类比钟表的环
