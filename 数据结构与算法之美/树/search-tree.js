@@ -100,8 +100,6 @@ class SearchTree {
   // 3. 删除的节点有左右节点 找到右子树的最小节点, 替换删除的节点, 然后删除右子树的最小节点
   // 替换可以避免直接删除root节点
 
-  // TODO: 如果删除的是根节点, 特殊处理一下. this.root 也要跟着变动
-
   delNode(node) {
     if (node == null) {
       return;
