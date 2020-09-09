@@ -49,17 +49,15 @@ function partition(array, start, end) {
   let pivot = array[end];
   let quick = start;
   let slow = start;
-  while (quick <= end) {
-    if (array[slow] <= pivot) {
+  while (quick < end) {
+    if (array[quick] < pivot) {
+      swap(array, slow, quick);
       slow++;
-    } else if (array[quick] <= pivot) {
-      swap(array, quick, slow);
     }
     quick++;
   }
-  // 这里要加1, 不然会死循环
-  // 但是为什么?
-  return slow + 1
+  swap(array, end, slow);
+  return slow;
 }
 
 function swap(array, i, j) {
@@ -74,7 +72,5 @@ console.log(merge_sort(case1));
 // let case2 = [3, 1, 4, 1, 9, 43, 2];
 // console.log(quick_sort(case2));
 
-
-
-let case3 = [1,9,6,3];
+let case3 = [1, 9, 6, 3];
 console.log(quick_sort(case3));
