@@ -1,5 +1,10 @@
 // 大顶堆
 
+function compare(a, b) {
+  // leftValue && leftValue >= currentValue && leftValue >= rightValue
+  // if(a && b)
+}
+
 class BigHeap {
   constructor() {
     this.array = [null];
@@ -32,6 +37,10 @@ class BigHeap {
     }
   }
 
+  firstLeafIndex() {
+    return Math.floor((this.array.length - 1) / 2) + 1;
+  }
+
   removeTop() {
     // 删除最后一个元素, 并把最后一个元素的值替换堆顶
     let tailIndex = this.array.length - 1;
@@ -39,22 +48,28 @@ class BigHeap {
     this.array.splice(tailIndex, 1);
     const originHead = this.array[1];
     this.array[1] = tailValue;
-    // 从上到小堆化
     let currentIndex = 1;
-    // 直到
-    while (!!this.array[currentIndex]) {
+    const leafIndex = this.firstLeafIndex()
+    // 从上到小堆化
+    // 直到叶子节点 ()
+    while (currentIndex < leafIndex) {
       let currentValue = this.array[currentIndex];
       let leftIndex = currentIndex * 2;
       let rightIndex = currentIndex * 2 + 1;
       let leftValue = this.array[leftIndex];
       let rightValue = this.array[rightIndex];
-      if (leftValue && leftValue >= currentValue && leftValue >= rightValue) {
+      // 不是叶子节点, 不存在左右叶子没有值的情况
+      if (
+        leftValue &&
+        leftValue >= currentValue &&
+        (!rightValue || leftValue >= rightValue)
+      ) {
         this.swap(currentIndex, leftIndex);
         currentIndex = leftIndex;
       } else if (
         rightValue &&
         rightValue >= currentValue &&
-        rightValue >= leftValue
+        (!leftValue || rightValue >= leftValue)
       ) {
         this.swap(currentIndex, rightIndex);
         currentIndex = rightIndex;
