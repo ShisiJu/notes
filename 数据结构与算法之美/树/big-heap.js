@@ -23,6 +23,7 @@ class BigHeap {
   add(val) {
     this.array.push(val);
     let currentIndex = this.array.length - 1;
+    // while (i/2 > 0 && a[i] > a[i/2]) { // 自下往上堆化      swap(a, i, i/2); // swap()函数作用：交换下标为i和i/2的两个元素      i = i/2;    }
     // 从下到上遍历
     while (currentIndex != 1) {
       let parentIndex = Math.floor(currentIndex / 2);
