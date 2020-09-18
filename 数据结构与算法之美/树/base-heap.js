@@ -1,13 +1,24 @@
-// 大顶堆
+// 大顶堆 比较函数
+var compareBigger = function(a, b) {
+  //
+  // a,b 都不存在
+  if (!a && !b) {
+    return 0;
+  }
+  if (a && !b) {
+    return 1;
+  }
+  if (!a && b) {
+    return -1;
+  }
 
-function compare(a, b) {
-  // leftValue && leftValue >= currentValue && leftValue >= rightValue
-  // if(a && b)
+  return a - b;
 }
-
-class BigHeap {
-  constructor() {
+// 应该传入比较函数
+class BaseHeap {
+  constructor(compare) {
     this.array = [null];
+    this.compare = compare;
   }
 
   swap(i, j) {
@@ -28,7 +39,7 @@ class BigHeap {
       let parentIndex = Math.floor(currentIndex / 2);
       let parentValue = this.array[parentIndex];
       let currentValue = this.array[currentIndex];
-      if (currentValue >= parentValue) {
+      if (this.compare(currentValue, parentValue)) {
         this.swap(currentIndex, parentIndex);
         currentIndex = parentIndex;
       } else {
@@ -49,7 +60,7 @@ class BigHeap {
     const originHead = this.array[1];
     this.array[1] = tailValue;
     let currentIndex = 1;
-    const leafIndex = this.firstLeafIndex()
+    const leafIndex = this.firstLeafIndex();
     // 从上到小堆化
     // 直到叶子节点 ()
     while (currentIndex < leafIndex) {
@@ -59,18 +70,10 @@ class BigHeap {
       let leftValue = this.array[leftIndex];
       let rightValue = this.array[rightIndex];
       // 不是叶子节点, 不存在左右叶子没有值的情况
-      if (
-        leftValue &&
-        leftValue >= currentValue &&
-        (!rightValue || leftValue >= rightValue)
-      ) {
+      if (this.compare(leftValue, rightValue) > -1 && this.compare(leftValue, currentValue) > 0) {
         this.swap(currentIndex, leftIndex);
         currentIndex = leftIndex;
-      } else if (
-        rightValue &&
-        rightValue >= currentValue &&
-        (!leftValue || rightValue >= leftValue)
-      ) {
+      } else if (this.compare(rightValue, leftValue) > -1 && this.compare(rightValue, currentValue) > 0) {
         this.swap(currentIndex, rightIndex);
         currentIndex = rightIndex;
       } else {
@@ -82,7 +85,8 @@ class BigHeap {
   }
 }
 
-let h = new BigHeap();
+
+let h = new BaseHeap(compareBigger);
 
 h.add(7);
 h.add(9);
