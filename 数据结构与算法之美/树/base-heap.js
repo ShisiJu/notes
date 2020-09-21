@@ -1,6 +1,5 @@
 // 大顶堆 比较函数
-var compareBigger = function(a, b) {
-  //
+var compareBigger = function (a, b) {
   // a,b 都不存在
   if (!a && !b) {
     return 0;
@@ -13,7 +12,23 @@ var compareBigger = function(a, b) {
   }
 
   return a - b;
-}
+};
+
+var compareSmaller = function (a, b) {
+  // a,b 都不存在
+  if (!a && !b) {
+    return 0;
+  }
+  if (a && !b) {
+    return 1;
+  }
+  if (!a && b) {
+    return -1;
+  }
+
+  return b - a;
+};
+
 // 应该传入比较函数
 class BaseHeap {
   constructor(compare) {
@@ -39,7 +54,7 @@ class BaseHeap {
       let parentIndex = Math.floor(currentIndex / 2);
       let parentValue = this.array[parentIndex];
       let currentValue = this.array[currentIndex];
-      if (this.compare(currentValue, parentValue)) {
+      if (this.compare(currentValue, parentValue) > 0) {
         this.swap(currentIndex, parentIndex);
         currentIndex = parentIndex;
       } else {
@@ -70,10 +85,16 @@ class BaseHeap {
       let leftValue = this.array[leftIndex];
       let rightValue = this.array[rightIndex];
       // 不是叶子节点, 不存在左右叶子没有值的情况
-      if (this.compare(leftValue, rightValue) > -1 && this.compare(leftValue, currentValue) > 0) {
+      if (
+        this.compare(leftValue, rightValue) > -1 &&
+        this.compare(leftValue, currentValue) > 0
+      ) {
         this.swap(currentIndex, leftIndex);
         currentIndex = leftIndex;
-      } else if (this.compare(rightValue, leftValue) > -1 && this.compare(rightValue, currentValue) > 0) {
+      } else if (
+        this.compare(rightValue, leftValue) > -1 &&
+        this.compare(rightValue, currentValue) > 0
+      ) {
         this.swap(currentIndex, rightIndex);
         currentIndex = rightIndex;
       } else {
@@ -85,13 +106,26 @@ class BaseHeap {
   }
 }
 
+function BigHeap() {
+  return new BaseHeap(compareBigger);
+}
 
-let h = new BaseHeap(compareBigger);
+function SmallHeap() {
+  return new BaseHeap(compareSmaller);
+}
 
-h.add(7);
-h.add(9);
-h.add(3);
-h.add(11);
 
-h.removeTop();
-console.log(h);
+
+const sh = new SmallHeap()
+
+sh.add(1)
+sh.add(10)
+sh.add(8)
+sh.add(2)
+sh.add(7)
+sh.removeTop()
+
+console.log(sh);
+
+
+
