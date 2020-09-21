@@ -300,6 +300,8 @@ https://ruby-doc.org/core-2.7.1/doc/keywords_rdoc.html
 
 ```rb
 a, b, c = 1, 2, 3
+# 交换
+a, b = b, a
 ```
 
 ```rb

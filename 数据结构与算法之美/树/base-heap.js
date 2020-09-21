@@ -1,13 +1,23 @@
 // 大顶堆 比较函数
+var is_not_empty = function (val) {
+  return val !== null && val !== undefined;
+};
+
+var is_empty = function (val) {
+  return !is_not_empty(val);
+};
+
+// 这里不能直接用 a , !a 这种形式
+// 因为 a=0 时, a == false
 var compareBigger = function (a, b) {
   // a,b 都不存在
-  if (!a && !b) {
+  if (is_empty(a) && is_empty(b)) {
     return 0;
   }
-  if (a && !b) {
+  if (is_not_empty(a) && is_empty(b)) {
     return 1;
   }
-  if (!a && b) {
+  if (is_empty(a) && is_not_empty(b)) {
     return -1;
   }
 
@@ -16,13 +26,13 @@ var compareBigger = function (a, b) {
 
 var compareSmaller = function (a, b) {
   // a,b 都不存在
-  if (!a && !b) {
+  if (is_empty(a) && is_empty(b)) {
     return 0;
   }
-  if (a && !b) {
+  if (is_not_empty(a) && is_empty(b)) {
     return 1;
   }
-  if (!a && b) {
+  if (is_empty(a) && is_not_empty(b)) {
     return -1;
   }
 
@@ -73,6 +83,10 @@ class BaseHeap {
     const tailValue = this.array[tailIndex];
     this.array.splice(tailIndex, 1);
     const originHead = this.array[1];
+    // 如果只剩堆顶时, 直接return
+    if (tailIndex === 1) {
+      return;
+    }
     this.array[1] = tailValue;
     let currentIndex = 1;
     const leafIndex = this.firstLeafIndex();
@@ -105,12 +119,12 @@ class BaseHeap {
     return originHead;
   }
 
-  top(){
-    return this.array[1]
+  top() {
+    return this.array[1];
   }
 
-  tail(){
-    return this.array[this.array.length - 1]
+  tail() {
+    return this.array[this.array.length - 1];
   }
 }
 
@@ -121,10 +135,6 @@ const BigHeap = function () {
 const SmallHeap = function () {
   return new BaseHeap(compareSmaller);
 };
-
-
-
-
 
 const sh = new SmallHeap();
 
@@ -137,5 +147,4 @@ sh.removeTop();
 
 console.log(sh);
 
-
-module.exports = {BigHeap, SmallHeap}
+module.exports = { BigHeap, SmallHeap };
