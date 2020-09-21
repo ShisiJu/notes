@@ -104,28 +104,38 @@ class BaseHeap {
 
     return originHead;
   }
+
+  top(){
+    return this.array[1]
+  }
+
+  tail(){
+    return this.array[this.array.length - 1]
+  }
 }
 
-function BigHeap() {
+const BigHeap = function () {
   return new BaseHeap(compareBigger);
-}
+};
 
-function SmallHeap() {
+const SmallHeap = function () {
   return new BaseHeap(compareSmaller);
-}
+};
 
 
 
-const sh = new SmallHeap()
 
-sh.add(1)
-sh.add(10)
-sh.add(8)
-sh.add(2)
-sh.add(7)
-sh.removeTop()
+
+const sh = new SmallHeap();
+
+sh.add(1);
+sh.add(10);
+sh.add(8);
+sh.add(2);
+sh.add(7);
+sh.removeTop();
 
 console.log(sh);
 
 
-
+module.exports = {BigHeap, SmallHeap}
