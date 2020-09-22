@@ -138,4 +138,4 @@ sh.removeTop();
 console.log(sh);
 
 
-module.exports = {BigHeap, SmallHeap}
+module.exports = {BaseHeap,BigHeap, SmallHeap}
