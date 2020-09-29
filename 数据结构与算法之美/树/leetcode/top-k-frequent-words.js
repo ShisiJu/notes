@@ -1,5 +1,5 @@
 // https://leetcode-cn.com/problems/top-k-frequent-words/
-let {BaseHeap} = require("./base-heap")
+let {BaseHeap} = require("../base-heap")
 
 
 function SmallObjHeap(){

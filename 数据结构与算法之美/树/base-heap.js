@@ -46,6 +46,11 @@ class BaseHeap {
     this.compare = compare;
   }
 
+  size() {
+    // 第0个元素是占位的 , 并没有实际意义
+    return this.array.length - 1;
+  }
+
   swap(i, j) {
     if (i == j) {
       return;
@@ -80,12 +85,12 @@ class BaseHeap {
   removeTop() {
     // 删除最后一个元素, 并把最后一个元素的值替换堆顶
     let tailIndex = this.array.length - 1;
+    const originHead = this.array[1];
     const tailValue = this.array[tailIndex];
     this.array.splice(tailIndex, 1);
-    const originHead = this.array[1];
     // 如果只剩堆顶时, 直接return
     if (tailIndex === 1) {
-      return;
+      return originHead;
     }
     this.array[1] = tailValue;
     let currentIndex = 1;
@@ -147,5 +152,4 @@ sh.removeTop();
 
 console.log(sh);
 
-
-module.exports = {BaseHeap,BigHeap, SmallHeap}
+module.exports = { BaseHeap, BigHeap, SmallHeap };
