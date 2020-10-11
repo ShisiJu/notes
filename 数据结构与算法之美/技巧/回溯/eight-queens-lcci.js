@@ -7,6 +7,7 @@
 // n 皇后问题
 // 分治 递归
 
+// 这里可以优化 看上级,如果有为true的, 就不能在同一列下为true
 function set_arr_val(arr, depth, i) {
   let _a = arr[depth];
   let true_index = _a.indexOf(true);
@@ -18,7 +19,23 @@ function set_arr_val(arr, depth, i) {
   }
 }
 
-function is_valid() {
+function is_valid(arr) {
+  // 行 数据就是按照行来遍历的, 因此不用检查
+  // 列
+  for (let col = 0; col < arr.length; col++) {
+    let count = 0;
+    for (let row = 0; row < arr.length; row++) {
+      if (arr[row][col]) {
+        count++;
+      }
+    }
+    if (count > 1) {
+      return false;
+    }
+  }
+  // 对角线
+  // 找到点 一个点可能有1条或2条对角线
+
   return true;
 }
 
