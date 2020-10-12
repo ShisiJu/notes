@@ -19,6 +19,24 @@ function set_arr_val(arr, depth, i) {
   }
 }
 
+function check_cross(p1, p2) {
+  if (Math.abs(p1[0] - p2[0]) === Math.abs(p1[1] - p2[1])) {
+    return true;
+  }
+  return false;
+}
+
+function get_points(arr) {
+  const result = [];
+  for (let i = 0; i < arr.length; i++) {
+    const _a = arr[i];
+    let col = _a.indexOf(true);
+    result.push([i, col]);
+  }
+
+  return result;
+}
+
 function is_valid(arr) {
   // 行 数据就是按照行来遍历的, 因此不用检查
   // 列
@@ -35,8 +53,38 @@ function is_valid(arr) {
   }
   // 对角线
   // 找到点 一个点可能有1条或2条对角线
+  // 四个点的坐标
+  const points = get_points(arr);
 
+  // (1, 1) (2,2) (3,3) (4,4)
+  for (let i = 0; i < points.length; i++) {
+    let p1 = points[i];
+    for (let j = i + 1; j < points.length; j++) {
+      let p2 = points[i + 1];
+      if (check_cross(p1, p2)) {
+        return false;
+      }
+    }
+  }
   return true;
+}
+
+// 转换要打印的输出
+function to_Q_array(arr) {
+  let result = [];
+  arr.forEach((a) => {
+    let row = "";
+    a.forEach((col) => {
+      if (col === true) {
+        row += "Q";
+      } else {
+        row += ".";
+      }
+    });
+    result.push(row);
+  });
+
+  return result;
 }
 
 function recur(result, arr, depth, MAX) {
@@ -48,7 +96,7 @@ function recur(result, arr, depth, MAX) {
     let arr_rep = arr.slice();
     set_arr_val(arr_rep, depth, i);
     if (depth == MAX && is_valid(arr_rep)) {
-      result.push(1);
+      result.push(to_Q_array(arr_rep));
     }
     recur(result, arr_rep, depth + 1, MAX);
   }
@@ -69,11 +117,17 @@ var solveNQueens = function (n) {
   const result = [];
   recur(result, arr, 0, n - 1);
   console.log(result.length);
+  console.log(result);
   return result;
-  // 每一行都必须 有且仅有一个
-  // 遍历所有情况
-  // 记录状态
-  // 判断是否valid
 };
 
 solveNQueens(4);
+
+// 5 时 这个不对
+// [".Q...","...Q.","Q....","....Q","..Q.."]
+
+[ [".Q...","...Q.","Q....","....Q","..Q.."],[".Q...","....Q","..Q..","Q....","...Q."],["..Q..","Q....","...Q.",".Q...","....Q"],["..Q..","Q....","....Q",".Q...","...Q."],["..Q..","....Q","Q....","...Q.",".Q..."],["..Q..","....Q",".Q...","...Q.","Q...."],["...Q.","Q....","..Q..","....Q",".Q..."],["...Q.",".Q...","....Q","Q....","..Q.."],["...Q.",".Q...","....Q","..Q..","Q...."],["....Q",".Q...","...Q.","Q....","..Q.."],["....Q","..Q..","Q....","...Q.",".Q..."]]
+
+// 预期
+
+[ [".Q...","....Q","..Q..","Q....","...Q."],["..Q..","Q....","...Q.",".Q...","....Q"],["..Q..","....Q",".Q...","...Q.","Q...."],["...Q.","Q....","..Q..","....Q",".Q..."],["...Q.",".Q...","....Q","..Q..","Q...."],["....Q",".Q...","...Q.","Q....","..Q.."],["....Q","..Q..","Q....","...Q.",".Q..."]]
