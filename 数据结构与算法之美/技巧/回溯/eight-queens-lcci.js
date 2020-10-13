@@ -20,7 +20,9 @@ function get_points(arr) {
   for (let i = 0; i < arr.length; i++) {
     const _a = arr[i];
     let col = _a.indexOf(true);
-    result.push([i, col]);
+    if(col > -1 ){
+      result.push([i, col]);
+    }
   }
 
   return result;
@@ -84,10 +86,10 @@ function recur(result, arr, depth, MAX) {
   for (let i = 0; i <= MAX; i++) {
     let arr_rep = JSON.parse(JSON.stringify(arr));
     set_arr_val(arr_rep, depth, i);
-    if (col_valid(arr_rep) == false) {
+    if (col_valid(arr_rep) == false || is_valid(arr_rep) == false) {
       continue;
     }
-    if (depth == MAX && is_valid(arr_rep)) {
+    if (depth == MAX) {
       result.push(to_Q_array(arr_rep));
     }
     recur(result, arr_rep, depth + 1, MAX);
