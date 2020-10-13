@@ -10,12 +10,17 @@
 // 这里可以优化 看上级,如果有为true的, 就不能在同一列下为true
 function set_arr_val(arr, depth, i) {
   let _a = arr[depth];
-  let true_index = _a.indexOf(true);
-  if (true_index == -1) {
-    _a[0] = true;
-  } else {
-    _a[true_index] = false;
-    _a[i] = true;
+  //   let true_index = _a.indexOf(true);
+  //   if (true_index == -1) {
+  //     _a[0] = true;
+  //   } else {
+  //     _a[true_index] = false;
+  //     _a[i] = true;
+  //   }
+  //TODO: 不知道为什么这里有问题 上面是对的
+  _a[i] = true;
+  if (i > 0) {
+    _a[i - 1] = false;
   }
 }
 
@@ -55,12 +60,10 @@ function is_valid(arr) {
   // 找到点 一个点可能有1条或2条对角线
   // 四个点的坐标
   const points = get_points(arr);
-
-  // (1, 1) (2,2) (3,3) (4,4)
   for (let i = 0; i < points.length; i++) {
     let p1 = points[i];
     for (let j = i + 1; j < points.length; j++) {
-      let p2 = points[i + 1];
+      let p2 = points[j];
       if (check_cross(p1, p2)) {
         return false;
       }
@@ -98,10 +101,9 @@ function recur(result, arr, depth, MAX) {
     if (depth == MAX && is_valid(arr_rep)) {
       result.push(to_Q_array(arr_rep));
     }
+    // TODO: 这里如果列 有的不行, 可以直接不去递归
     recur(result, arr_rep, depth + 1, MAX);
   }
-
-  // 如果不是最后一层
 }
 
 /**
@@ -122,12 +124,3 @@ var solveNQueens = function (n) {
 };
 
 solveNQueens(4);
-
-// 5 时 这个不对
-// [".Q...","...Q.","Q....","....Q","..Q.."]
-
-[ [".Q...","...Q.","Q....","....Q","..Q.."],[".Q...","....Q","..Q..","Q....","...Q."],["..Q..","Q....","...Q.",".Q...","....Q"],["..Q..","Q....","....Q",".Q...","...Q."],["..Q..","....Q","Q....","...Q.",".Q..."],["..Q..","....Q",".Q...","...Q.","Q...."],["...Q.","Q....","..Q..","....Q",".Q..."],["...Q.",".Q...","....Q","Q....","..Q.."],["...Q.",".Q...","....Q","..Q..","Q...."],["....Q",".Q...","...Q.","Q....","..Q.."],["....Q","..Q..","Q....","...Q.",".Q..."]]
-
-// 预期
-
-[ [".Q...","....Q","..Q..","Q....","...Q."],["..Q..","Q....","...Q.",".Q...","....Q"],["..Q..","....Q",".Q...","...Q.","Q...."],["...Q.","Q....","..Q..","....Q",".Q..."],["...Q.",".Q...","....Q","..Q..","Q...."],["....Q",".Q...","...Q.","Q....","..Q.."],["....Q","..Q..","Q....","...Q.",".Q..."]]
