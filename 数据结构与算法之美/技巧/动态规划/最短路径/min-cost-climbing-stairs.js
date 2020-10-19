@@ -4,29 +4,41 @@
  * @return {number}
  */
 
-var minCostClimbingStairs_dynamic = function (cost) {
+//  这里也可以从后往前
+var minCostClimbingStairs = function (cost) {
   const len = cost.length;
-  const result_array = new Array().fill(0);
-  result_array[0] = cost[0];
-  result_array[1] = cost[1];
+  let v1 = cost[0];
+  let v2 = cost[1];
   for (let i = 2; i < len; i++) {
-    result_array[i] =
-      cost[i] + Math.min(result_array[i - 1], result_array[i - 2]);
+    let temp = v2;
+    v2 = cost[i] + Math.min(v1, v2);
+    v1 = temp;
   }
 
-  return Math.min(result_array[len - 1], result_array[len - 2]);
+  return Math.min(v1, v2);
 };
 
+// f(n) = min(f(n-1) + cost[n-1], f(n-2) + cost[n-2])
+// 如果没有备忘录则会超时了
 var minCostClimbingStairs = function (cost) {
-  return recur_c(cost.length, 0);
+  // memo 备忘录
+  const record_map = new Map();
+  return recur_c(cost.length);
 
-  function recur_c(index, val) {
+  function recur_c(index) {
+    if (record_map.has(index)) {
+      return record_map.get(index);
+    }
     if (index < 2) {
-      return val + cost[index];
+      return 0;
     }
 
-    const v1 = recur_c(index - 1, val);
-    const v2 = recur_c(index - 2, val);
-    return val + Math.min(v1, v2);
+    let v1 = cost[index - 1] + recur_c(index - 1);
+    let v2 = cost[index - 2] + recur_c(index - 2);
+    const result = Math.min(v1, v2);
+    record_map.set(index, result);
+    return result;
   }
 };
+
+minCostClimbingStairs([10, 15, 20]);
