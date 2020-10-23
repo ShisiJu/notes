@@ -4,6 +4,8 @@
  * @param {number[][]} obstacleGrid
  * @return {number}
  */
+
+//  初始值没有配置好
 var uniquePathsWithObstacles = function (obstacleGrid) {
   const n = obstacleGrid.length;
   const m = obstacleGrid[0].length;
@@ -11,12 +13,12 @@ var uniquePathsWithObstacles = function (obstacleGrid) {
   if (obstacleGrid[0][0] == 1 || obstacleGrid[n - 1][m - 1] == 1) {
     return 0;
   }
-  const rows_num = new Array(m);
-  for (let f_col = 0; f_col < obstacleGrid[0].length; f_col++) {
-    if (obstacleGrid[0][f_col] == 0) {
-      rows_num[f_col] = 1;
-    } else {
-      rows_num[f_col] = 0;
+  const rows_num = new Array(m).fill(1);
+  // 处理row_num
+  let index = obstacleGrid[0].indexOf(1);
+  if (index != -1) {
+    for (let start = index; start < rows_num.length; start++) {
+      rows_num[start] = 0;
     }
   }
 
@@ -55,4 +57,18 @@ const test4 = [
   [0, 0],
 ];
 
-uniquePathsWithObstacles(test4);
+const test5 = [
+  [0, 1, 0, 0, 0],
+  [1, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+];
+// 0
+// uniquePathsWithObstacles(test5);
+
+// 2
+uniquePathsWithObstacles([
+  [0, 0, 0],
+  [0, 1, 0],
+  [0, 0, 0],
+]);
