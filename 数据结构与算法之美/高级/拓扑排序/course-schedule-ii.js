@@ -5,7 +5,7 @@
  * @param {number[][]} prerequisites
  * @return {number[]}
  */
-var findOrder = function (numCourses, prerequisites) {
+var findOrder_BFS = function (numCourses, prerequisites) {
   const in_degree = new Map();
   const out_degree = new Map();
   for (let i = 0; i < numCourses; i++) {
@@ -53,6 +53,10 @@ var findOrder = function (numCourses, prerequisites) {
     return [];
   }
 };
+
+
+// 尝试深度优先
+var findOrder = function (numCourses, prerequisites) {};
 
 findOrder(4, [
   [1, 0],
