@@ -3,6 +3,11 @@ class SmallHeap {
     this.array = [];
   }
 
+  create_or_update(node){
+    
+
+  }
+
   sort() {
     this.array.sort(function (a, b) {
       return a - b;
@@ -23,13 +28,14 @@ class Graph {
     this.vertex_num = vertex_num;
     this.adjacent_table = [];
     for (let i = 0; i < vertex_num; i++) {
-      this.adjacent_table[i] = new Set();
+      // 如果数据量大, 可以使用 hashmap , 跳表 等数据结构
+      this.adjacent_table[i] = new Array();
     }
   }
 
   // 这里没有做错误处理
   add_edge(s, e, w) {
-    this.adjacent_table[s].add(new Edge(s, e, w));
+    this.adjacent_table[s].push(new Edge(s, e, w));
   }
 
   add_edge_by_array(array) {

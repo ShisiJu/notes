@@ -34,6 +34,7 @@ public void dijkstra(int s, int t) { // 从顶点s到顶点t的最短路径
       if (minVertex.dist + e.w < nextVertex.dist) { // 更新next的dist
         nextVertex.dist = minVertex.dist + e.w;
         predecessor[nextVertex.id] = minVertex.id;
+        // TODO: 这里我觉得可以不用 inqueue,  在堆中加入一个 create_or_update方法来处理? 
         if (inqueue[nextVertex.id] == true) {
           queue.update(nextVertex); // 更新队列中的dist值
         } else {
