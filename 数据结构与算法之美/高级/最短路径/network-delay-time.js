@@ -1,3 +1,4 @@
+// https://leetcode-cn.com/problems/network-delay-time/
 class SmallHeap {
   constructor() {
     this.array = [];
@@ -57,7 +58,7 @@ class Graph {
   constructor(vertex_num) {
     this.vertex_num = vertex_num;
     this.adjacent_table = [];
-    for (let i = 0; i < vertex_num; i++) {
+    for (let i = 1; i <= vertex_num; i++) {
       // 如果数据量大, 可以使用 hashmap , 跳表 等数据结构
       this.adjacent_table[i] = new Array();
     }
@@ -74,9 +75,9 @@ class Graph {
     });
   }
 
-  dijkstra(start, end) {
+  max_dijkstra(start, end) {
     // 初始化start 到所有的顶点的最短距离 min_dist
-    const min_dist = new Array(this.vertex_num).fill(Number.MAX_VALUE);
+    const min_dist = new Array(this.vertex_num + 1).fill(Number.MAX_VALUE);
     // 给 start 点的min_dist 设置为0
     min_dist[start] = 0;
     // small_heap 加入 start点
@@ -85,40 +86,56 @@ class Graph {
     small_heap.create_or_update(new Vertex(start, 0));
     while (small_heap.size() != 0) {
       let cur_v = small_heap.poll();
-      let cur_i =cur_v.vertex_index
+      let cur_i = cur_v.vertex_index;
       // 如果small_heap 中第一个是end
       // 说明此时已经获取到最短路径
       // 因为, 如果其他边可能比现在更短的话, 它应该在堆顶
-      if(cur_i == end){
-        break 
-      }
       let cur_weight = min_dist[cur_i];
       for (let i = 0; i < this.adjacent_table[cur_i].length; i++) {
         const next_edge = this.adjacent_table[cur_i][i];
         const comp_weight = cur_weight + next_edge.weight;
         if (comp_weight < min_dist[next_edge.end]) {
-          min_dist[next_edge.end] = comp_weight
+          min_dist[next_edge.end] = comp_weight;
           small_heap.create_or_update(new Vertex(next_edge.end, comp_weight));
         }
       }
     }
-    return min_dist
+    let max_dist = 0;
+    for (let i = 1; i < this.vertex_num + 1; i++) {
+      if(max_dist < min_dist[i]){
+        max_dist = min_dist[i];
+      }
+    }
+
+    if (max_dist == Number.MAX_VALUE) {
+      return -1;
+    } else {
+      return max_dist;
+    }
   }
 }
 
-let g = new Graph(6);
-let ar = [
-  [0, 1, 10],
-  [1, 2, 15],
-  [2, 5, 5],
-  [1, 3, 2],
-  [3, 2, 1],
-  [3, 5, 12],
-  [0, 4, 15],
-  [4, 5, 10],
-];
+/**
+ * @param {number[][]} times
+ * @param {number} N
+ * @param {number} K
+ * @return {number}
+ */
+var networkDelayTime = function (times, N, K) {
+  // 需要多久才能使所有节点都收到信号
+  let g = new Graph(N);
+  g.add_edge_by_array(times);
+  return g.max_dijkstra(K, 1);
+};
 
-
-g.add_edge_by_array(ar);
-
-g.dijkstra(0,5)
+// networkDelayTime(
+//   [
+//     [2, 1, 1],
+//     [2, 3, 1],
+//     [3, 4, 1],
+//     [2, 5, 10],
+//     [3, 6, 1],
+//   ],
+//   6,
+//   2
+// );
