@@ -59,6 +59,11 @@ var kSmallestPairs = function (nums1, nums2, k) {
   // 需要记录两个位置, 记录两个值的和
   // 第一个 NodeSum 肯定是 0，0
   const first_node = new NodeSum(0, 0, nums1[0] + nums2[0]);
+  const visited = new Array(nums1.length);
+  for (let i = 0; i < visited.length; i++) {
+    visited[i] = new Array(nums2.length).fill(false);
+  }
+
   // 放入 small_heap 中
   const small_heap = new SmallHeap();
   small_heap.add(first_node);
@@ -66,7 +71,11 @@ var kSmallestPairs = function (nums1, nums2, k) {
   const result = [];
   while (small_heap.is_not_empty()) {
     let cur_node = small_heap.poll();
+    if (visited[cur_node.first_index][cur_node.second_index]) {
+      continue;
+    }
     result.push([nums1[cur_node.first_index], nums2[cur_node.second_index]]);
+    visited[cur_node.first_index][cur_node.second_index] = true;
     // result 中等于 k 就可以返回了
     if (result.length == k) {
       return result;
@@ -94,12 +103,10 @@ var kSmallestPairs = function (nums1, nums2, k) {
   }
 
   return result;
-
-  // 注意每一个节点都有边界;  就是数组的长度
 };
 
 // kSmallestPairs([1, 7, 11], [2, 4, 6], 3);
 
 // [[1,1],[1,1],[2,1],[1,2],[1,2],[2,2],[1,3],[1,3],[2,3]]
 // 最多就有9 个
-kSmallestPairs([1, 1, 2], [1, 2, 3], 10);
+// kSmallestPairs([1, 1, 2], [1, 2, 3], 10);
