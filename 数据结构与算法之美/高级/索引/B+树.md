@@ -29,3 +29,17 @@
  b+树主要是用在外部存储上，为了减少磁盘IO次数。
 跳表比较适合内存存储。
 实际上，两者本质的设计思想是雷同的，性能差距还是要具体看应用场景，无法从时间复杂度这么宽泛的度量标准来度量了。
+
+
+
+## 为什么不适用
+
+[why-are-skip-lists-not-preferred-over-b-trees-for-databases](https://stackoverflow.com/questions/21828834/why-are-skip-lists-not-preferred-over-b-trees-for-databases)
+
+
+
+[what-is-skiplist-why-skiplist-index-for-memsql](https://www.singlestore.com/blog/what-is-skiplist-why-skiplist-index-for-memsql)
+
+
+
+https://opensource.googleblog.com/2013/01/c-containers-that-save-memory-and-time.html
