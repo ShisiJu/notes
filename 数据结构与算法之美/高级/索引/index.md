@@ -1,9 +1,195 @@
 # 数据库索引
 
+带着问题去学习! 学习起来才有趣;
+
+下面的每一个小节, 都由若干个问题组成;
+希望这些问题能够给大家带来一定的帮助;
+
+同时, 也希望大家提出好的问题, 一起分享!
+
+## 数据准备
+
+
+```sql
+-- Table: public.product
+-- DROP TABLE public.product;
+CREATE TABLE public.product
+(
+    id bigint NOT NULL,
+    name character varying(30) COLLATE pg_catalog."default" NOT NULL,
+    price numeric(30,6) NOT NULL,
+    created_at time without time zone NOT NULL,
+    comment text COLLATE pg_catalog."default",
+    CONSTRAINT product_pkey PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.product
+    OWNER to postgres;
+COMMENT ON TABLE public.product
+    IS '产品表';
+```
+
+创建一个 获取随机字符串的函数; 执行一下就好;
+
+```sql
+create or replace function f_random_str(length INTEGER) 
+returns character varying AS $$
+DECLARE
+    result varchar(50);
+BEGIN
+    SELECT array_to_string(ARRAY(SELECT chr((65 + round(random() * 25)) :: integer)
+    FROM generate_series(1,length)), '') INTO result;
+    
+    return result;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+造1000w数据, 大概需要5分钟;
+
+```sql
+insert into product
+select 
+generate_series(1,10000000),
+f_random_str(12) ,
+(random()*(1000))::decimal, 
+clock_timestamp(),
+md5(random()::text)
+```
+
+
+根据id 查数据大概 60ms
+查没有索引的name 大概800ms
+
+
+## 数据存储
+
+
+[mysql b+树能存多少条数据？b+树每层有多少分支？](https://blog.csdn.net/csdnlijingran/article/details/102309593)
+https://www.cnblogs.com/leefreeman/p/8315844.html
+
+数据库存储最小单元: 页 (默认 16KB, 也可以配置成别的大小)
+
+文中讲的是主键索引; 
+
+主键的索引, 叶子节点存储的是 数据行
+
+
+## 索引
+
+### 索引是什么
+
+
+Indexes are a common way to enhance database performance. An index allows the database server to
+find and retrieve specific rows much faster than it could do without an index. But indexes also add
+overhead to the database system as a whole, so they should be used sensibly.
+
+
+[postgresql documentation](https://www.postgresql.org/files/documentation/pdf/13/postgresql-13-A4.pdf)
+
+
+ 
+### 为什么要有数据库索引
+
+
+索引主要是为了减少I/O的时间;
+
+
+
+## 索引的类型
+
+
+### 为什么索引有很多种
+
+
+### 索引有哪几种类型
+
+以pg 数据库为例: 
+
+
+### B+ 树
+
+
+
+主键索引的叶子节点存的是整行数据。
+在 InnoDB 里，主键索引也被称为聚簇索引（clustered index）。非主键索引的叶子节点内容是主键的值。
+在 InnoDB 里，非主键索引也被称为二级索引（secondary index）。
+
+
+使用场景
+
+B+ 树为什么只有叶子节点存数据?
+
+有一道MySQL的面试题，为什么MySQL的索引要使用B+树而不是其它树形结构?比如B树？
+
+现在这个问题的复杂版本可以参考本文；
+
+他的简单版本回答是：
+
+因为B树不管叶子节点还是非叶子节点，都会保存数据，这样导致在非叶子节点中能保存的指针数量变少（有些资料也称为扇出），指针少的情况下要保存大量数据，只能增加树的高度，导致IO操作变多，查询性能变低；
+
+为什么不使用 跳表(skip list) ?
+
+redis zset 为什么用 跳表 而不用 B+树?
+
+
+
+
+### hash 
+
+### gin
+
+### bitmap
+
+
+
+
+
+
+
 1. 跳表
 2. 平衡树
 3. B+ 树
 4. 索引的类型
+
+作为一种动态数据结构，我们需要某种手段来维护索引与原始链表大小之间的平衡，也就是说，如果链表中结点多了，索引结点就相应地增加一些，避免复杂度退化，以及查找、插入、删除操作性能下降。
+
+如果你了解红黑树、AVL 树这样平衡二叉树，你就知道它们是通过左右旋的方式保持左右子树的大小平衡（如果不了解也没关系，我们后面会讲），而跳表是通过随机函数来维护前面提到的“平衡性”。
+
+
+跳表的数据 
+
+红黑树
+
+## B+树
+
+
+https://blog.csdn.net/csdnlijingran/article/details/102309593
+
+
+因为B+树只有叶子结点才存储表的记录信息，其他非叶子结点只存储数据(索引)，
+所以高度为1和2的数据为1170个，叶子结点为16(一行1k，页的数据为16k)，
+即高度为3的B+树可以存储的数据是1170*1170*16=2千万
+
+
+
+## 跳表
+
+1000w 数据
+
+如果`每2个结点`提取一个结点到上一级，做索引, 就是 log2(1000w) 是 24 层;  
+如果`每3个结点`提取一个结点到上一级，做索引, 就是 log3(1000w) 是 15 层;
+
+
+
+
+
+## 回表
+
 
 
 [为什么生产环境中B+树的高度总是3-4层？](https://zhuanlan.zhihu.com/p/86137284)
