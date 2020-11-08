@@ -9,6 +9,9 @@
 
 ## 数据准备
 
+为了更好的说明和演示;
+我们需要事前造一些数据;  
+一个 有`1000w` 数据的产品表: 
 
 ```sql
 -- Table: public.product
@@ -61,23 +64,102 @@ clock_timestamp(),
 md5(random()::text)
 ```
 
-
-根据id 查数据大概 60ms
-查没有索引的name 大概800ms
-
-
 ## 数据存储
 
+### 数据存放在哪里
 
-[mysql b+树能存多少条数据？b+树每层有多少分支？](https://blog.csdn.net/csdnlijingran/article/details/102309593)
-https://www.cnblogs.com/leefreeman/p/8315844.html
 
-数据库存储最小单元: 页 (默认 16KB, 也可以配置成别的大小)
+当然是存放在硬盘中了;
+但是, 我们怎么找到具体数据库文件的物理地址呢?
 
-文中讲的是主键索引; 
+首先, 我们要先查找到表的oid, 然后再去数据库存储数据的目录;
 
-主键的索引, 叶子节点存储的是 数据行
+```sql
+select oid,relfilenode from pg_class where relname='product';
+```
 
+**图一**
+
+安装pg的时候, 会让你指定数据存放的地址; 
+我的是 D:\env\pg\data; 
+
+所以, 我需要找的地址是: 
+`D:\env\pg\data\base\16394\16502`
+
+
+### 如何存储数据
+
+我们找到了具体的位置.
+那么, 数据库是如何储存这些数据的呢? 
+
+我们知道计算机中的最小单位是bit;
+而操作系统管理计算机硬件的最小单位是 一页 (4KB); 
+所以文件大小和文件所占磁盘空间大小是不一样的;
+可能文件只有1kb, 但是却占了磁盘空间的4kb;
+
+同样, 数据库管理文件也有一个最小单位: block_size 或者 page_size
+
+
+```sql
+SELECT current_setting('block_size');
+```
+
+通过sql 我们可以得知:
+pg 数据库默认的page大小是 8KB;
+
+我们可以在   `D:\env\pg\data\base\16394` 这个目录下, 查看文件:
+会发现很多文件都是 8kb的倍数;
+
+
+推荐阅读: 
+
+[linux空白文件大小为4kb简单解释](https://blog.csdn.net/weixin_43944305/article/details/103578222)
+
+[InnoDB一棵B+树可以存放多少行数据？](https://www.cnblogs.com/leefreeman/p/8315844.html)
+
+
+### 为什么block_size设置成8kb
+
+是为了性能!
+
+但是, 为什么8kb是相对较好的选择呢?
+
+
+我找到了一些有趣问题与回答
+
+推荐阅读
+
+[Should the database block size always be 8K?](https://knowledgebase.progress.com/articles/Article/18293)
+
+[Re: Performance block size.](https://www.postgresql.org/message-id/irnvt4%24es5%241%40dough.gmane.org)
+
+[storage-page-layout](https://www.postgresql.org/docs/current/storage-page-layout.html)
+
+
+### 如何查看表所占空间
+
+通过pg提供的语句, 可以很方便地查看到表 所占空间的大小
+
+```sql
+-- 表大小 (包括 索引)
+select pg_size_pretty(pg_total_relation_size('product'));
+-- 主键id 索引大小
+select pg_size_pretty(pg_relation_size('product_pkey'));
+```
+
+
+查看product表占用的空间 大概 1256 MB
+主键id 索引占用的空间 大概 214 MB
+
+
+```sql
+create extension pgstattuple;
+SELECT * FROM pgstatindex('product_pkey');
+```
+
+查看索引详情
+
+[pg 分析语句](http://mysql.taobao.org/monthly/2018/11/06/)
 
 ## 索引
 
@@ -106,6 +188,14 @@ overhead to the database system as a whole, so they should be used sensibly.
 ### 为什么索引有很多种
 
 
+
+PostgreSQL provides several index types: B-tree, Hash, GiST, SP-GiST, GIN and BRIN. Each index
+type uses a different algorithm that is best suited to different types of queries. By default, the CREATE
+INDEX command creates B-tree indexes, which fit the most common situations.
+
+
+
+
 ### 索引有哪几种类型
 
 以pg 数据库为例: 
@@ -114,11 +204,18 @@ overhead to the database system as a whole, so they should be used sensibly.
 ### B+ 树
 
 
+ B-trees can handle equality and range queries on data that can be sorted into some ordering. In
+particular, the PostgreSQL query planner will consider using a B-tree index whenever an indexed
+column is involved in a comparison using one of these operators:
 
 主键索引的叶子节点存的是整行数据。
 在 InnoDB 里，主键索引也被称为聚簇索引（clustered index）。非主键索引的叶子节点内容是主键的值。
 在 InnoDB 里，非主键索引也被称为二级索引（secondary index）。
 
+
+推荐阅读
+
+[Database · 理论基础 · 高性能B-tree索引](http://mysql.taobao.org/monthly/2020/05/02/)
 
 使用场景
 
@@ -140,6 +237,22 @@ redis zset 为什么用 跳表 而不用 B+树?
 
 
 ### hash 
+
+ Hash indexes can only handle simple equality comparisons. The query planner will consider using
+a hash index whenever an indexed column is involved in a comparison using the = operator. The
+following command is used to create a hash index:
+
+```sql
+CREATE INDEX hash_index_of_name ON product USING hash (name);
+```
+DROP INDEX hash_index_of_name;  
+
+Query returned successfully in 20 secs 879 msec.
+
+加上hash 索引之后只要  60ms
+
+
+
 
 ### gin
 
