@@ -177,9 +177,29 @@ overhead to the database system as a whole, so they should be used sensibly.
  
 ### 为什么要有数据库索引
 
+答: 提高查询效率
 
-索引主要是为了减少I/O的时间;
+我们在数据准备中, 创建了 product 表;
 
+```sql
+SELECT * FROM product WHERE id = 12311
+```
+
+如果没有主键的索引, 数据库不得不扫描整个 product 表, 一行一行地找;
+
+就如上面的sql, id = 12311 只有一条; 但是, 数据库仍然要扫描整个表;
+这显然是一种低效的查询方式; 
+
+但是, id 上有索引, 它可以使用更为高效的方式去定位到 id = 12311 的数据行;
+例如, 它可以仅仅在索引的搜索树上进行几次查询, 就能够得到数据;
+
+索引创建之后, 不需要有更多的操作了; 当表有变化时, 数据库会更新索引;
+并且, 数据库在它认为使用`索引比扫描全表更高效时`, 会选择使用索引;
+
+索引同时也可以加快 `UPDATE` 和 `DELETE` 命令.
+索引此外还使用在 `join` 查询中. 如果 join 的条件中有索引, 那么会显著提升查询效率;
+
+但是, 索引同时也是一种负担. 对于不常使用的索引, 应该删掉;
 
 
 ## 索引的类型
@@ -187,22 +207,40 @@ overhead to the database system as a whole, so they should be used sensibly.
 
 ### 为什么索引有很多种
 
+答: 在不同的场景下, 应该选择不同的索引; 
+
+pg 数据库提供了非常多的索引
+
+- B-tree
+- Hash
+- GiST
+- SP-GiST
+- GIN
+- BRIN
+- 等等
+
+每一种索引都有不同的算法, 它们适用于不同的类型的查询;
+默认情况下, 会创建B-tree索引, 因为它适用于多数情况;
 
 
-PostgreSQL provides several index types: B-tree, Hash, GiST, SP-GiST, GIN and BRIN. Each index
-type uses a different algorithm that is best suited to different types of queries. By default, the CREATE
-INDEX command creates B-tree indexes, which fit the most common situations.
+推荐阅读
+
+**这篇文章讲得特别好, 推荐大家去看看**
+
+[PostgreSQL 9种索引的原理和应用场景](https://developer.aliyun.com/article/111793)
+
+[Database · 理论基础 · 高性能B-tree索引](http://mysql.taobao.org/monthly/2020/05/02/)
+
+我这里就只写 B-tree 和 hash 这两个最常用的;
+
+### B-tree
+
+https://blog.csdn.net/csdnlijingran/article/details/102309593
 
 
-
-
-### 索引有哪几种类型
-
-以pg 数据库为例: 
-
-
-### B+ 树
-
+因为B+树只有叶子结点才存储表的记录信息，其他非叶子结点只存储数据(索引)，
+所以高度为1和2的数据为1170个，叶子结点为16(一行1k，页的数据为16k)，
+即高度为3的B+树可以存储的数据是1170*1170*16=2千万
 
  B-trees can handle equality and range queries on data that can be sorted into some ordering. In
 particular, the PostgreSQL query planner will consider using a B-tree index whenever an indexed
@@ -215,7 +253,6 @@ column is involved in a comparison using one of these operators:
 
 推荐阅读
 
-[Database · 理论基础 · 高性能B-tree索引](http://mysql.taobao.org/monthly/2020/05/02/)
 
 使用场景
 
@@ -234,6 +271,23 @@ B+ 树为什么只有叶子节点存数据?
 redis zset 为什么用 跳表 而不用 B+树?
 
 
+## 跳表
+
+1000w 数据
+
+如果`每2个结点`提取一个结点到上一级，做索引, 就是 log2(1000w) 是 24 层;  
+如果`每3个结点`提取一个结点到上一级，做索引, 就是 log3(1000w) 是 15 层;
+
+
+
+## 回表
+
+
+
+[为什么生产环境中B+树的高度总是3-4层？](https://zhuanlan.zhihu.com/p/86137284)
+
+
+https://stackoverflow.com/questions/256511/skip-list-vs-binary-search-tree?rq=1
 
 
 ### hash 
@@ -253,17 +307,6 @@ Query returned successfully in 20 secs 879 msec.
 
 
 
-
-### gin
-
-### bitmap
-
-
-
-
-
-
-
 1. 跳表
 2. 平衡树
 3. B+ 树
@@ -278,37 +321,7 @@ Query returned successfully in 20 secs 879 msec.
 
 红黑树
 
-## B+树
 
-
-https://blog.csdn.net/csdnlijingran/article/details/102309593
-
-
-因为B+树只有叶子结点才存储表的记录信息，其他非叶子结点只存储数据(索引)，
-所以高度为1和2的数据为1170个，叶子结点为16(一行1k，页的数据为16k)，
-即高度为3的B+树可以存储的数据是1170*1170*16=2千万
-
-
-
-## 跳表
-
-1000w 数据
-
-如果`每2个结点`提取一个结点到上一级，做索引, 就是 log2(1000w) 是 24 层;  
-如果`每3个结点`提取一个结点到上一级，做索引, 就是 log3(1000w) 是 15 层;
-
-
-
-
-
-## 回表
-
-
-
-[为什么生产环境中B+树的高度总是3-4层？](https://zhuanlan.zhihu.com/p/86137284)
-
-
-https://stackoverflow.com/questions/256511/skip-list-vs-binary-search-tree?rq=1
 
 
 所以要现有使用场景
@@ -320,7 +333,18 @@ https://stackoverflow.com/questions/256511/skip-list-vs-binary-search-tree?rq=1
 ## 通用区间和等值
 
 
-##
+## covering index
+
+
+https://www.postgresql.org/docs/11/indexes-index-only-scans.html
+
+推荐阅读
+
+https://www.cnblogs.com/myseries/p/11265849.html
+
+
+
+
 使用场景
 
 索引类型
@@ -337,16 +361,9 @@ B+树首先是有序结构，为了不至于树的高度太高，影响查找效
 
 
 
-https://developer.aliyun.com/article/111793
-
-
-
-
-
 
 跳表
 [聊聊Mysql索引和redis跳表](https://zhuanlan.zhihu.com/p/61900308)
-
 
 
 [redis为何单线程 效率还这么高 为何使用跳表不使用B+树做索引(阿里)](https://my.oschina.net/u/4335884/blog/3367826)
@@ -386,5 +403,4 @@ There are a few reasons:
 
 
 
-索引的数据结构
-https://www.javazhiyin.com/65086.html
+
