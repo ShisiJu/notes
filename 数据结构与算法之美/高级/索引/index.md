@@ -165,15 +165,14 @@ SELECT * FROM pgstatindex('product_pkey');
 
 ### 索引是什么
 
+索引是一种常用提高数据库性能的方式. 索引能够帮助数据库快速地找到特定的数据行;
+但是索引也会增加整个数据库系统的 开销 (overhead)，所以应该明智地使用它们。
 
-Indexes are a common way to enhance database performance. An index allows the database server to
-find and retrieve specific rows much faster than it could do without an index. But indexes also add
-overhead to the database system as a whole, so they should be used sensibly.
+推荐阅读
 
+本节很多内容来自 pg数据库的官方文档
 
 [postgresql documentation](https://www.postgresql.org/files/documentation/pdf/13/postgresql-13-A4.pdf)
-
-
  
 ### 为什么要有数据库索引
 
@@ -204,7 +203,6 @@ SELECT * FROM product WHERE id = 12311
 
 ## 索引的类型
 
-
 ### 为什么索引有很多种
 
 答: 在不同的场景下, 应该选择不同的索引; 
@@ -229,26 +227,94 @@ pg 数据库提供了非常多的索引
 
 [PostgreSQL 9种索引的原理和应用场景](https://developer.aliyun.com/article/111793)
 
-[Database · 理论基础 · 高性能B-tree索引](http://mysql.taobao.org/monthly/2020/05/02/)
-
 我这里就只写 B-tree 和 hash 这两个最常用的;
 
 ### B-tree
 
-https://blog.csdn.net/csdnlijingran/article/details/102309593
+
+
+ B-trees can handle equality and range queries on data that can be sorted into some ordering. In
+particular, the PostgreSQL query planner will consider using a B-tree index whenever an indexed
+column is involved in a comparison using one of these operators:
+
+
+
+
+
+**为什么B-tree索引可以order by**
+
+B-tree 可以返回 有序
+
+
+索引除了可以帮助查询以外, 还能够帮助查询返回特定的顺序;
+尤其适用于 `limit` 
+
+
+For a query that requires scanning a large fraction of the table, an explicit sort is likely to be faster than
+using an index because it requires less disk I/O due to following a sequential access pattern. Indexes
+are more useful when only a few rows need be fetched. An important special case is ORDER BY in
+combination with LIMIT n: an explicit sort will have to process all the data to identify the first n
+rows, but if there is an index matching the ORDER BY, the first n rows can be retrieved directly,
+without scanning the remainder at all.
+
+
+可以让 `order by` 免去排序的步骤;
+
+但是, 在PostgreSQL 中, 只有B-tree 才有这中效果;
+
+这是因为, B-tree 的数据结构; 
+在B-tree中, 叶子节点本身就是有序的;
+
+
+```sql
+explain (analyse,COSTS, VERBOSE,BUFFERS )
+select *
+from product 
+order by id desc 
+limit 10
+```
+
+`Index Scan Backward using product_pkey on public.product`
+
+目前 only B-tree indexes can be declared unique
+There's no need to manually create indexes on unique columns; doing so would just duplicate
+the automatically-created index.
+
+
+
+**pg 有簇集索引么?** 
+
+pg 都是二级索引
+
+
+
+
+
+这一块 可以看看极客时间上的文章
+
+[04 | 深入浅出索引（上）](https://time.geekbang.org/column/article/69236)
+
+mysql 簇级索引
+主键B+树 叶子节点存储row 
+非叶子节点存储 指针
+
+主键索引的叶子节点存的是整行数据。
+在 InnoDB 里，主键索引也被称为聚簇索引（clustered index）。非主键索引的叶子节点内容是主键的值。
+在 InnoDB 里，非主键索引也被称为二级索引（secondary index）。
+
+
+推荐阅读: 
+
+[Database · 理论基础 · 高性能B-tree索引](http://mysql.taobao.org/monthly/2020/05/02/)
+
+[mysql b+树能存多少条数据？b+树每层有多少分支？](https://blog.csdn.net/csdnlijingran/article/details/102309593)
+
 
 
 因为B+树只有叶子结点才存储表的记录信息，其他非叶子结点只存储数据(索引)，
 所以高度为1和2的数据为1170个，叶子结点为16(一行1k，页的数据为16k)，
 即高度为3的B+树可以存储的数据是1170*1170*16=2千万
 
- B-trees can handle equality and range queries on data that can be sorted into some ordering. In
-particular, the PostgreSQL query planner will consider using a B-tree index whenever an indexed
-column is involved in a comparison using one of these operators:
-
-主键索引的叶子节点存的是整行数据。
-在 InnoDB 里，主键索引也被称为聚簇索引（clustered index）。非主键索引的叶子节点内容是主键的值。
-在 InnoDB 里，非主键索引也被称为二级索引（secondary index）。
 
 
 推荐阅读
