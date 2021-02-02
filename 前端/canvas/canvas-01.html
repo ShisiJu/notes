@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+
+  </div>
+</body>
+</html>
+
+<script>
+const canvas = document.createElement("canvas");
+document.querySelector("#app").insertAdjacentElement("afterbegin", canvas);
+canvas.width = 400
+canvas.height = 400
+const ctx = canvas.getContext("2d");
+ctx.rotate(-0.34);
+ctx.fillText("文字~~~~~~~~~~~~", 100, 100);
+ctx.fillText("文字~~~~~~~~~~~~", 150, 150);
+ctx.fillText("文字~~~~~~~~~~~~", 200, 200);
+</script>
